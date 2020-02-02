@@ -46,8 +46,8 @@ You should see in your terminal a message indicating that the server is listenin
 3. Make your first request of ownership sending your wallet address:
     ![Request: http://localhost:8000/requestValidation ](screenshots/request-ownership.png)
 4. Sign the message with your Wallet:
-    ![Use the Wallet to sign a message](screesnshots/sign-message.png)
+    ![Use the Wallet to sign a message](screenshots/sign-message.png)
 5. Submit your Star
-     ![Request: http://localhost:8000/submitstar]screesnshots/submit-star.png)
+     ![Request: http://localhost:8000/submitstar](screenshots/submit-star.png)
 6. Retrieve Stars owned by me
-    ![Request: http://localhost:8000/blocks/<WALLET_ADDRESS>](screesnshots/retrieve-stars.png)
+    ![Request: http://localhost:8000/blocks/<WALLET_ADDRESS>](screenshots/retrieve-stars.png)
