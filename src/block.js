@@ -29,7 +29,7 @@ class Block {
      *  values in the block data as a consecuence the hash of the block should be different.
      *  Steps:
      *  1. Return a new promise to allow the method be called asynchronous.
-     *  2. Save the in auxiliary variable the current hash of the block (`this` represent the block object)
+     *  2. Save in the auxiliary variable the current hash of the block (`this` represent the block object)
      *  3. Recalculate the hash of the entire block (Use SHA256 from crypto-js library)
      *  4. Compare if the auxiliary hash value is different from the calculated one.
      *  5. Resolve true or false depending if it is valid or not.
@@ -41,19 +41,22 @@ class Block {
             // Save in auxiliary variable the current block hash
             const blockHash = self.hash;                             
             // Recalculate the hash of the Block
-            const newHash = SHA256(JSON.stringify(self)).toString()
+            self.hash = null
+            const newHash =SHA256(JSON.stringify(self)).toString() //Buffer(JSON.stringify(self)).toString('hex');//
+            self.hash = blockHash
+            
             // Comparing if the hashes changed
             if(newHash === blockHash){
                 resolve(true)
             }else{
                 resolve(false)
             }
-            // Returning the Block is not valid
-            
+            // Returning the Block is not valid 
             // Returning the Block is valid
 
         });
     }
+
 
     /**
      *  Auxiliary Method to return the block body (decoding the data)
@@ -66,18 +69,16 @@ class Block {
      */
     getBData() {
         // Getting the encoded data saved in the Block
-        const encodedBlockData = this.data
+        const encodedBlockData = this.body
         // Decoding the data to retrieve the JSON representation of the object
         let decodedBlockData = hex2ascii(encodedBlockData);
         // Parse the data to an object to be retrieve.
         decodedBlockData = JSON.parse(decodedBlockData)
         // Resolve with the data if the object isn't the Genesis block
-        return new Promise((resolve,reject)=>{
-            if(decodedBlockData.previousBlockHash)
-                resolve(decodedBlockData)
-            else 
-                reject(Error('a Genesis Block'))
-        })
+
+        if(this.height > 0)
+            return decodedBlockData
+      
     }
 
 }
