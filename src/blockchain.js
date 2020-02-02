@@ -38,7 +38,6 @@ class Blockchain {
         if( this.height === -1){
             let block = new BlockClass.Block({data: 'Genesis Block'});
             await this._addBlock(block);
-            this.height = 0
         }
     }
 
@@ -74,8 +73,9 @@ class Blockchain {
                 block.height = self.chain.length;
                 block.time = new Date().getTime().toString().slice(0,-3);
                 block.hash = SHA256(JSON.stringify(block)).toString();
-                self.chain.push(block)
-                resolve(block)
+                self.chain.push(block);
+                self.height++;
+                resolve(block);
             }catch(err){
                 reject(Error('Error adding the block'))
             }
@@ -124,13 +124,11 @@ class Blockchain {
             timeDifference= Math.abs(Math.round(timeDifference))
             try{
                 if(timeDifference <= 5){
-                    bitcoinMessage.verify(message, address, signature)
-                    self.requestMessageOwnershipVerification(address)
+                    const verified = bitcoinMessage.verify(message, address, signature)
+                    if(!verified) throw new Error('fail to verify signature')
                     let block = new BlockClass.Block({
                         data: {
-                            address, 
-                            message,
-                            signature,
+                            address,
                             star
                         } 
                      });
@@ -209,12 +207,51 @@ class Blockchain {
      * 1. You should validate each block using `validateBlock`
      * 2. Each Block should check the with the previousBlockHash
      */
-    validateChain() {
+    async validateChain() {
         let self = this;
-        let errorLog = [];
+        
+        let block1 = new BlockClass.Block({data: 'test 1 '});
+        await this._addBlock(block1);
+
+        let block2 = new BlockClass.Block({data: 'test 2'});
+        await this._addBlock(block2);
+        this.mutate()
         return new Promise(async (resolve, reject) => {
+            let errorLog = [];
+
+            try{
+                errorLog =  self.chain.map( async (block, index)=>{
+                    let errors = []
+
+                    const valid = await block.validate()
+            
+                    if(!valid) errors.push(`Block has been tampered - Block Index = ${index}`)
+                    
+                    if(index> 0){
+                        const currentPreviousBlockHash = block.previousBlockHash;
+                        const previousBlockHash = self.chain[self.chain.indexOf(block) - 1].hash
+                        if(currentPreviousBlockHash !== previousBlockHash) errors.push(`The previous hash value Not match - Block Index = ${index}`) 
+                    }
+                    return errors
+                })
+                errorLog =await Promise.all(errorLog)
+                errorLog= errorLog.filter(elm => {
+                    if(elm.length)
+                         return elm
+                })
+                resolve(errorLog)
+            }catch(err){
+                reject(err)}
 
         });
+    }
+
+    mutate(){
+         this.chain[2].body = "error"
+         this.chain[0].body = "error 2"
+         this.chain[2].previousBlockHash = "error 2"
+
+         return this.chain
     }
 
 }
