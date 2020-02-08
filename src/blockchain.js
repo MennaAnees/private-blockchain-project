@@ -125,7 +125,7 @@ class Blockchain {
             try {
                 if (timeDifference <= 5) {
                     const verified = bitcoinMessage.verify(message, address, signature)
-                    if (!verified) throw new Error('fail to verify signature')
+                    if (!verified) reject("fail to verify signature")
                     let block = new BlockClass.Block({
                         data: {
                             address,
@@ -222,7 +222,7 @@ class Blockchain {
             if (!valid) agg.push(`Block has been tampered - Block Index = ${index}`)
             if (!!index) {
                 const currentPreviousBlockHash = ele.previousBlockHash;
-                const previousBlockHash = self.chain[self.chain.indexOf(ele) - 1].hash
+                const previousBlockHash = self.chain[index- 1].hash
                 if (currentPreviousBlockHash !== previousBlockHash) agg.push(`The previous hash value Not match - Block Index = ${index}`)
             }
             return agg
