@@ -208,22 +208,21 @@ class Blockchain {
      * 2. Each Block should check the with the previousBlockHash
      */
     async validateChain() {
-        let self = this;
-
-        let block1 = new BlockClass.Block({ data: 'test 1 ' });
+        const block1 = new BlockClass.Block({ data: 'test 1 ' });
         await this._addBlock(block1);
 
-        let block2 = new BlockClass.Block({ data: 'test 2' });
+        const block2 = new BlockClass.Block({ data: 'test 2' });
         await this._addBlock(block2);
         this.mutate()
 
-        return self.chain.reduce((agg, ele, index) => {
-            const valid = ele.validate()
-            if (!valid) agg.push(`Block has been tampered - Block Index = ${index}`)
+        const self = this;
+        return self.chain.reduce(async (agg, ele, index) => {
+            const valid = await ele.validate()
+            if (!valid) (await agg).push(`Block has been tampered - Block Index = ${index}`)
             if (!!index) {
                 const currentPreviousBlockHash = ele.previousBlockHash;
                 const previousBlockHash = self.chain[index- 1].hash
-                if (currentPreviousBlockHash !== previousBlockHash) agg.push(`The previous hash value Not match - Block Index = ${index}`)
+                if (currentPreviousBlockHash !== previousBlockHash) (await agg).push(`The previous hash value Not match - Block Index = ${index}`)
             }
             return agg
         }, [])
