@@ -209,16 +209,22 @@ class Blockchain {
      */
     async validateChain() {
         const self = this;
-        return self.chain.reduce(async (agg, ele, index) => {
-            const valid = await ele.validate()
-            if (!valid) (await agg).push(`Block has been tampered - Block Index = ${index}`)
-            if (!!index) {
-                const currentPreviousBlockHash = ele.previousBlockHash;
-                const previousBlockHash = self.chain[index- 1].hash
-                if (currentPreviousBlockHash !== previousBlockHash) (await agg).push(`The previous hash value Not match - Block Index = ${index}`)
-            }
-            return agg
-        }, [])
+        let errorLogs = [];
+        return new Promise((resolve, reject) => {
+            errorLogs= self.chain.reduce(async (agg, ele, index) => {
+                const valid = await ele.validate()
+                if (!valid) (await agg).push(`Block has been tampered - Block Index = ${index}`)
+                if (!!index) {
+                    const currentPreviousBlockHash = ele.previousBlockHash;
+                    const previousBlockHash = self.chain[index - 1].hash
+                    if (currentPreviousBlockHash !== previousBlockHash) (await agg).push(`The previous hash value Not match - Block Index = ${index}`)
+                }
+                return agg
+            }, [])
+            resolve(errorLogs);
+
+        });
+
     }
 
     /**
