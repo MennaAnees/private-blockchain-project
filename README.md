@@ -51,5 +51,9 @@ You should see in your terminal a message indicating that the server is listenin
      ![Request: http://localhost:8000/submitstar](screenshots/submit-star.png)
 6. Retrieve Stars owned by me
     ![Request: http://localhost:8000/blocks/<WALLET_ADDRESS>](screenshots/retrieve-stars.png)
-7. validate blockchain function
-    ![Request: http://localhost:8000/blocks/<WALLET_ADDRESS>](screenshots/testValidationChain.png)
+7. validate blockchain function before mutation which gives an empty errorLog Array
+    ![Request: http://localhost:8000/validateChain](screenshots/validate-chain-1.png)
+8. mutate the blockchain: adds 2 blocks and then mutate the data to test the vlidateChain function  
+    ![Request: http://localhost:8000/mutateChain](screenshots/mutate-chain.png)
+9. validate blockchain function after mutation which gives an array of all the errors
+    ![Request: http://localhost:8000/validateChain](screenshots/validate-chain-2.png)

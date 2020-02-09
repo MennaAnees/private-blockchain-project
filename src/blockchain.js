@@ -208,13 +208,6 @@ class Blockchain {
      * 2. Each Block should check the with the previousBlockHash
      */
     async validateChain() {
-        const block1 = new BlockClass.Block({ data: 'test 1 ' });
-        await this._addBlock(block1);
-
-        const block2 = new BlockClass.Block({ data: 'test 2' });
-        await this._addBlock(block2);
-        this.mutate()
-
         const self = this;
         return self.chain.reduce(async (agg, ele, index) => {
             const valid = await ele.validate()
@@ -228,10 +221,22 @@ class Blockchain {
         }, [])
     }
 
-    mutate() {
-        this.chain[2].body = "error"
-        this.chain[0].body = "error 2"
-        this.chain[2].previousBlockHash = "error 2"
+    /**
+     * to test the validateChain: 
+     * add two blocks
+     * mutate the body of the genesis block and the 3rd block of the chain
+     * change previousBlockHash of a block
+    **/
+    async mutateChain() {
+        const block1 = new BlockClass.Block({ data: 'test 1 ' });
+        await this._addBlock(block1);
+
+        const block2 = new BlockClass.Block({ data: 'test 2' });
+        await this._addBlock(block2);
+
+        this.chain[2].body = "mutated !!"
+        this.chain[0].body = "mutated !!"
+        this.chain[2].previousBlockHash = "changed !!"
 
         return this.chain
     }
